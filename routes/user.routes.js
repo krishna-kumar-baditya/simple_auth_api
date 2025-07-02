@@ -9,9 +9,14 @@ const fileUploader = new FileUploader({
 const authCheck = require('../middlewares/auth.middleware')()
 const roleCheck = require('../middlewares/role.middleware')
 
-router.get('/profile-details',authCheck.authenticateAPI,UserController.profileDetails)
-router.get('/users',authCheck.authenticateAPI,roleCheck('admin'),UserController.getAllUsers)
-router.get('/edit',authCheck.authenticateAPI,UserController.getSpecificUser)
-router.get('/delete/:id',authCheck.authenticateAPI,UserController.deleteUser)
+// router.get('/profile-details',authCheck.authenticateAPI,UserController.profileDetails)
+// router.get('/users',authCheck.authenticateAPI,roleCheck('admin'),UserController.getAllUsers)
+// router.get('/edit',authCheck.authenticateAPI,UserController.getSpecificUser)
+// router.get('/delete/:id',authCheck.authenticateAPI,UserController.deleteUser)
+// 
+router.get('/profile-details',UserController.profileDetails)
+router.get('/users',UserController.getAllUsers)
+// router.get('/edit',UserController.getSpecificUser)
+router.get('/delete/:id',UserController.deleteUser)
 
 module.exports = router

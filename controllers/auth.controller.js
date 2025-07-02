@@ -120,7 +120,7 @@ class AuthController {
             }
             const payload = { id: user._id };
             const token = jwt.sign(payload, process.env.JWT_SECRET, {
-                expiresIn: "10M",
+                expiresIn: "1H",
             });
             const userWithoutSensitiveData = await AuthRepository.findById(
                 user._id
@@ -143,28 +143,6 @@ class AuthController {
             });
         }
     }
-    async profileDetails(req, res) {
-        try {
-            const user = req.user;
-            const userWithoutSensitiveData = await AuthRepository.findById(
-                user._id
-            );
-
-            return res.status(200).send({
-                status: 200,
-                data: userWithoutSensitiveData,
-                message: "User profile details fetched successfully!",
-            });
-        } catch (error) {
-            console.log(
-                `error in profileDetails of authcontroller due to : ${error.message} `
-            );
-            return res.status(500).send({
-                status: 500,
-                data: {},
-                message: error.message || error,
-            });
-        }
-    }
+    
 }
 module.exports = new AuthController();

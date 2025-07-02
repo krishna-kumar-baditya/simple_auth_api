@@ -11,24 +11,61 @@ class UserRepository {
             throw error;
         }
     }
-    // get all users
+    // get all users without npm i mongoose-aggregate-paginate-v2
+    // async getAllUsers(page = 1, limit = 5) {
+    //     try {
+    //         const skip = (page - 1) * limit;
+    //         const total = await UserModel.countDocuments({ isDeleted: false });
+    //         console.log("total ", total);
+
+    //         const users = await UserModel.find({ isDeleted: false })
+    //             .skip(skip)
+    //             .limit(parseInt(limit));
+    //         console.log("users ", users);
+    //         return {
+    //             total,
+    //             page: parseInt(page),
+    //             limit: parseInt(limit),
+    //             totalPages: Math.ceil(total / limit),
+    //             users,
+    //         };
+    //     } catch (error) {
+    //         throw error;
+    //     }
+    // }
     async getAllUsers(page = 1, limit = 5) {
         try {
-            const skip = (page - 1) * limit;
-            const total = await UserModel.countDocuments({ isDeleted: false });
-            console.log("total ", total);
-
-            const users = await UserModel.find({ isDeleted: false })
-                .skip(skip)
-                .limit(parseInt(limit));
-            console.log("users ", users);
+            const options = {
+                page,
+                limit
+            }
+            const result = await UserModel.aggregatePaginate([
+                {
+                    $match : {
+                        isDeleted : false
+                    }
+                },
+                {
+                    $project : {
+                        _id : 1,
+                        firstName :1,
+                        lastName :1,
+                        email :1,
+                        role :1,
+                        age :1,
+                        profilePic :1,
+                    }
+                }
+            ],options)
+            console.log("result",result);
+            
             return {
-                total,
-                page: parseInt(page),
-                limit: parseInt(limit),
-                totalPages: Math.ceil(total / limit),
-                users,
-            };
+                total : result.totalDocs,
+                page : result.page,
+                limit : result.limit,
+                totalPages : result.totalPages,
+                users : result.docs,
+            }
         } catch (error) {
             throw error;
         }
