@@ -11,5 +11,6 @@ const authCheck = require('../middlewares/auth.middleware')()
 
 router.post('/signup',fileUploader.upload().single("profilePic"),AuthController.signup)
 router.post('/signin',AuthController.signin)
+router.post('/forget-password',AuthController.forgetPassword)
 
 module.exports = router

@@ -1,5 +1,20 @@
 const UserModel = require("../models/user.model");
 class UserRepository {
+    // email exists
+    async emailExists(email,id) {
+        try {
+            return await UserModel.findOne({
+                email,
+                isDeleted: false,
+                _id : {$ne : id}
+            });
+        } catch (error) {
+            console.log(
+                `error in emailexists of userrepo due to :${error.message} `
+            );
+        }
+    }
+
     // find user by id
     async findById(userID) {
         try {
@@ -37,46 +52,55 @@ class UserRepository {
         try {
             const options = {
                 page,
-                limit
-            }
-            const result = await UserModel.aggregatePaginate([
-                {
-                    $match : {
-                        isDeleted : false
-                    }
-                },
-                {
-                    $project : {
-                        _id : 1,
-                        firstName :1,
-                        lastName :1,
-                        email :1,
-                        role :1,
-                        age :1,
-                        profilePic :1,
-                    }
-                }
-            ],options)
-            console.log("result",result);
-            
+                limit,
+            };
+            const result = await UserModel.aggregatePaginate(
+                [
+                    {
+                        $match: {
+                            isDeleted: false,
+                        },
+                    },
+                    {
+                        $project: {
+                            _id: 1,
+                            firstName: 1,
+                            lastName: 1,
+                            email: 1,
+                            role: 1,
+                            age: 1,
+                            profilePic: 1,
+                        },
+                    },
+                ],
+                options
+            );
+            console.log("result", result);
+
             return {
-                total : result.totalDocs,
-                page : result.page,
-                limit : result.limit,
-                totalPages : result.totalPages,
-                users : result.docs,
-            }
+                total: result.totalDocs,
+                page: result.page,
+                limit: result.limit,
+                totalPages: result.totalPages,
+                users: result.docs,
+            };
         } catch (error) {
             throw error;
         }
     }
-    // async getSpecificUser(id){
-    //     try {
-    //         return await UserModel.findById(id)
-    //     } catch (error) {
-
-    //     }
-    // }
+    async updateUserData(id, data) {
+        try {
+            return await UserModel.findOneAndUpdate(
+                {
+                    _id: id,
+                },
+                data,
+                {
+                    new: true,
+                }
+            );
+        } catch (error) {}
+    }
     // delete user
     async deleteUser(userID) {
         try {
@@ -94,4 +118,3 @@ class UserRepository {
     }
 }
 module.exports = new UserRepository();
-bkjbkj

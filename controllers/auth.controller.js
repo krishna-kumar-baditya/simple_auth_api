@@ -54,7 +54,7 @@ class AuthController {
                     subject: "Registration Confirmation",
                     text: `You have successfully registered with us with ${email} email id. Thank You!!!`,
                 };
-                mailer.sendMail(mailObj);
+                await mailer.sendMail(mailObj);
                 const userWithoutSensitiveData = await AuthRepository.findById(
                     newUser._id
                 );
@@ -143,6 +143,60 @@ class AuthController {
             });
         }
     }
-    
+    async forgetPassword(req, res) {
+        try {
+            const { error, value } = signinSchema.validate(req.body, {
+                abortEarly: false,
+            });
+            if (error) {
+                const messages = error.details.map((detail) => detail.message);
+                return res.status(400).send({
+                    staus: 400,
+                    data: {},
+                    message: messages,
+                });
+            }
+            const { email, password } = value;
+            const isUserExists = await AuthRepository.findOne(email);
+            if (!isUserExists) {
+                return res.status(400).send({
+                    status: 200,
+                    message: "User is not exists",
+                });
+            }
+            const hashedPassword = await new UserModel().generateHash(password);
+            // update user password in database
+            const data = await AuthRepository.updatePassword(
+                email,
+                hashedPassword
+            );
+            const mailer = new Mailer(
+                "Gmail",
+                process.env.APP_EMAIL,
+                process.env.APP_PASSWORD
+            );
+            const mailObj = {
+                to: email,
+                subject: "Password chnaged",
+                text: `Your new password ${password}`,
+            };
+            await mailer.sendMail(mailObj);
+            if (data) {
+                return res.status(200).send({
+                    status: 200,
+                    message: "User password is updated",
+                });
+            }
+        } catch (error) {
+            console.log(
+                `error in forgetPassword of authcontroller due to : ${error.message} `
+            );
+            return res.status(500).send({
+                status: 500,
+                data: {},
+                message: error.message || error,
+            });
+        }
+    }
 }
 module.exports = new AuthController();

@@ -16,7 +16,8 @@ const roleCheck = require('../middlewares/role.middleware')
 // 
 router.get('/profile-details',UserController.profileDetails)
 router.get('/users',UserController.getAllUsers)
-// router.get('/edit',UserController.getSpecificUser)
+router.get('/edit/:id',UserController.getSpecificUser)
+router.post('/update/:id',fileUploader.upload().single("profilePic"),UserController.updateUserData)
 router.get('/delete/:id',UserController.deleteUser)
 
 module.exports = router

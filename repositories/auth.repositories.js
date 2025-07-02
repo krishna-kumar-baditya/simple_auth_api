@@ -26,7 +26,9 @@ class AuthRepository {
     // find user by id
     async findById(userID) {
         try {
-            return await UserModel.findById(userID).select("-password -_id -isDeleted -createdAt -updatedAt");
+            return await UserModel.findById(userID).select(
+                "-password -_id -isDeleted -createdAt -updatedAt"
+            );
         } catch (error) {
             throw error;
         }
@@ -34,7 +36,22 @@ class AuthRepository {
     // find user by email
     async findOne(email) {
         try {
-            return await UserModel.findOne({ email, isDeleted: false }).select("+password");
+            return await UserModel.findOne({ email, isDeleted: false }).select(
+                "+password"
+            );
+        } catch (error) {
+            throw error;
+        }
+    }
+    // update password
+    async updatePassword(email, hashedPassword) {
+        try {
+            return await UserModel.updateOne(
+                {
+                    email: email,
+                },
+                { $set: { password: hashedPassword } }
+            );
         } catch (error) {
             throw error;
         }
