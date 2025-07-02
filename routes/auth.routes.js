@@ -6,11 +6,10 @@ const fileUploader = new FileUploader({
         supportedFiles : ["image/png", "image/jpg", "image/jpeg"],
         fileSize : 1024 * 1024 * 2, // renamed from fieldSize
 })
-const authCheck = require('../middlewares/authMiddleware')()
+const authCheck = require('../middlewares/auth.middleware')()
 
 
 router.post('/signup',fileUploader.upload().single("profilePic"),AuthController.signup)
 router.post('/signin',AuthController.signin)
-router.get('/profile-details',authCheck.authenticateAPI,AuthController.profileDetails)
 
 module.exports = router

@@ -1,5 +1,6 @@
 const UserModel = require("../models/user.model");
 class AuthRepository {
+    // create user
     async createuser(userdata) {
         try {
             return await UserModel.create(userdata);
@@ -9,6 +10,7 @@ class AuthRepository {
             );
         }
     }
+    // email exists or not
     async emailExists(email) {
         try {
             return await UserModel.findOne({
@@ -21,6 +23,7 @@ class AuthRepository {
             );
         }
     }
+    // find user by id
     async findById(userID) {
         try {
             return await UserModel.findById(userID).select("-password -_id -isDeleted -createdAt -updatedAt");
@@ -28,6 +31,7 @@ class AuthRepository {
             throw error;
         }
     }
+    // find user by email
     async findOne(email) {
         try {
             return await UserModel.findOne({ email, isDeleted: false }).select("+password");

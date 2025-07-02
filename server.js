@@ -3,13 +3,22 @@ const app = express();
 require("dotenv").config();
 const db = require("./config/db");
 const session = require('express-session');
+const path = require('path')
+const cors = require('cors')
+// static folder
+app.use(express.static(path.join(__dirname,"uploads")))
 
 
 app.use(express.urlencoded({
     extended : true
 }))
 app.use(express.json())
-
+// Allow all origins with credentials
+app.use(cors({
+  origin: true, // allows all origins
+  methods : ["GET","POST","PUT","DELETE","OPTIONS"],
+  credentials: true // important if using session/cookies
+}));
 app.use(session({
     secret: 'MyS3CR3T#@!@CGGmn',
     resave: false,
@@ -18,7 +27,7 @@ app.use(session({
 }));
 
 app.use((req, res, next) => {
-    let auth = require('./middlewares/authMiddleware')(req, res, next)
+    let auth = require('./middlewares/auth.middleware')(req, res, next)
     app.use(auth.initialize());
     if (req.session.token && req.session.token != null) {
         req.headers['token'] = req.session.token;
@@ -29,8 +38,10 @@ app.use((req, res, next) => {
 
 
 
-// api
-app.use('/api/user',require('./routes/auth.routes'))
+// auth api
+app.use('/api/auth',require('./routes/auth.routes'))
+// user api
+app.use('/api/user',require('./routes/user.routes'))
 
 const PORT = process.env.PORT || 3000;
 // Start the server only after connecting to the database

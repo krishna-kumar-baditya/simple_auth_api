@@ -65,7 +65,7 @@ module.exports = () => {
                 if (err) {
                     return res.send({
                         status: 500,
-                        message: 'Please provide a vaid token ,your token might be expired'
+                        message: 'Please provide a vaild token ,your token might be expired'
                     });
                 }
                 if (!user) {
